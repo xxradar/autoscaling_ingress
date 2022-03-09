@@ -72,7 +72,7 @@ prometheus-operated                       ClusterIP   None             <none>   
 prometheus-prometheus-node-exporter       ClusterIP   10.105.67.143    <none>        9100/TCP                     97s
 ```
 ```
-kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-grafana 3000:80 &   #username: admin  password: prom-operator
+kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-grafana 3000:80 &
 kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-operated 9090:9090 &
 ```
 Default password for grafana `username: admin  password: prom-operator`
