@@ -101,3 +101,83 @@ spec:
     - ingress-nginx
 EOF
 ```
+## Deploy a sample app
+```
+kubectl apply -f - <<EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podinfo
+spec:
+  selector:
+    matchLabels:
+      app: podinfo
+  template:
+    metadata:
+      labels:
+        app: podinfo
+    spec:
+      containers:
+      - name: podinfo
+        image: stefanprodan/podinfo
+        ports:
+        - containerPort: 9898
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: podinfo
+spec:
+  ports:
+    - port: 80
+      targetPort: 9898
+      nodePort: 30001
+  selector:
+    app: podinfo
+  type: ClusterIP
+EOF
+```
+## Deploy the ingress resource
+```
+kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: podinfo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "example.com"
+      http:
+        paths:
+          - backend:
+              service:
+                name: podinfo
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+EOF
+```
+Test the ingress ...
+```
+$ kubectl get svc ingress-nginx-controller -n ingress-nginx
+NAME                       TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+ingress-nginx-controller   LoadBalancer   10.111.11.74   <pending>     80:30191/TCP,443:31432/TCP   3h14m
+```
+```
+curl  -H "Host: example.com" http://127.0.0.1:30191
+{
+  "hostname": "podinfo-5d76864686-dcmdx",
+  "version": "6.0.3",
+  "revision": "",
+  "color": "#34577c",
+  "logo": "https://raw.githubusercontent.com/stefanprodan/podinfo/gh-pages/cuddle_clap.gif",
+  "message": "greetings from podinfo v6.0.3",
+  "goos": "linux",
+  "goarch": "amd64",
+  "runtime": "go1.16.9",
+  "num_goroutine": "6",
+  "num_cpu": "4"
+}
+```
