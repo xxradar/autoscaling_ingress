@@ -48,6 +48,6 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
   --namespace prometheus --create-namespace
 ```
 ```
-kubectl port-forward svc/grafana-server 3000 -n ingress-nginx --address  0.0.0.0 &
-kubectl port-forward svc/prometheus-server 9090 -n ingress-nginx --address 0.0.0.0 &
+kubectl port-forward svc/grafana-server 3000 -n prometheus --address  0.0.0.0 &
+kubectl port-forward svc/prometheus-server 9090 -n prometheus --address 0.0.0.0 &
 ```
