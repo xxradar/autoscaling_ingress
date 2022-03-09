@@ -77,6 +77,7 @@ kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-operated 90
 ```
 Default password for grafana `username: admin  password: prom-operator`
 
+## Making sure prometheus and grafana can obtain the ingress nginx metrics
 
 ```
 kubectl apply -f -<<EOF
