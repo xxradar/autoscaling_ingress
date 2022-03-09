@@ -87,17 +87,16 @@ metadata:
   namespace: prometheus
   labels:
     app: nginx-ingress
-    release: prometheus-operator
+    release: prometheus
 spec:
   endpoints:
   - interval: 30s
     port: metrics
   selector:
     matchLabels:
-      app: nginx-ingress
-      release: nginx-ingress
+      app.kubernetes.io/name: ingress-nginx
   namespaceSelector:
     matchNames:
-    - nginx-ingress
+    - ingress-nginx
 EOF
 ```
