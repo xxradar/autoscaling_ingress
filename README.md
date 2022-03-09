@@ -76,3 +76,28 @@ kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-grafana 300
 kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-operated 9090:9090 &
 ```
 Default password for grafana `username: admin  password: prom-operator`
+
+
+```
+kubectl apply -f -<<EOF
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: nginx-ingress-controller-metrics
+  namespace: prometheus
+  labels:
+    app: nginx-ingress
+    release: prometheus-operator
+spec:
+  endpoints:
+  - interval: 30s
+    port: metrics
+  selector:
+    matchLabels:
+      app: nginx-ingress
+      release: nginx-ingress
+  namespaceSelector:
+    matchNames:
+    - nginx-ingress
+EOF
+```
