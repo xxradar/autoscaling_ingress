@@ -48,6 +48,31 @@ helm install prometheus prometheus-community/kube-prometheus-stack \
   --namespace prometheus --create-namespace
 ```
 ```
-kubectl port-forward svc/grafana-server 3000 -n prometheus --address  0.0.0.0 &
-kubectl port-forward svc/prometheus-server 9090 -n prometheus --address 0.0.0.0 &
+$ kubectl get po -n prometheus
+NAME                                                     READY   STATUS    RESTARTS   AGE
+alertmanager-prometheus-kube-prometheus-alertmanager-0   2/2     Running   0          40s
+prometheus-grafana-8568977b76-rszrx                      3/3     Running   0          56s
+prometheus-kube-prometheus-operator-55b8575db7-mc86z     1/1     Running   0          56s
+prometheus-kube-state-metrics-94f76f559-fr44q            1/1     Running   0          56s
+prometheus-prometheus-kube-prometheus-prometheus-0       2/2     Running   0          39s
+prometheus-prometheus-node-exporter-8ckhp                1/1     Running   0          56s
+prometheus-prometheus-node-exporter-rhlgl                1/1     Running   0          56s
+prometheus-prometheus-node-exporter-wj6p4                1/1     Running   0          56s
 ```
+```
+$ kubectl get svc -n prometheus
+NAME                                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+alertmanager-operated                     ClusterIP   None             <none>        9093/TCP,9094/TCP,9094/UDP   81s
+prometheus-grafana                        ClusterIP   10.100.35.177    <none>        80/TCP                       97s
+prometheus-kube-prometheus-alertmanager   ClusterIP   10.96.38.194     <none>        9093/TCP                     97s
+prometheus-kube-prometheus-operator       ClusterIP   10.100.226.240   <none>        443/TCP                      97s
+prometheus-kube-prometheus-prometheus     ClusterIP   10.98.42.127     <none>        9090/TCP                     97s
+prometheus-kube-state-metrics             ClusterIP   10.100.72.229    <none>        8080/TCP                     97s
+prometheus-operated                       ClusterIP   None             <none>        9090/TCP                     80s
+prometheus-prometheus-node-exporter       ClusterIP   10.105.67.143    <none>        9100/TCP                     97s
+```
+```
+kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-grafana 3000:80 &   #username: admin  password: prom-operator
+kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-operated 9090:9090 &
+```
+Default password for grafana `username: admin  password: prom-operator`
