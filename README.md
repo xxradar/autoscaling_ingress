@@ -181,3 +181,61 @@ curl  -H "Host: example.com" http://127.0.0.1:30191
   "num_cpu": "4"
 }
 ```
+## Deploy LOCUST to generate traffic
+```
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: locust-script
+data:
+  locustfile.py: |-
+    from locust import HttpUser, task, between
+
+    class QuickstartUser(HttpUser):
+        wait_time = between(0.7, 1.3)
+
+        @task
+        def hello_world(self):
+            self.client.get("/", headers={"Host": "example.com"})
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust
+spec:
+  selector:
+    matchLabels:
+      app: locust
+  template:
+    metadata:
+      labels:
+        app: locust
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust
+          ports:
+            - containerPort: 8089
+          volumeMounts:
+            - mountPath: /home/locust
+              name: locust-script
+      volumes:
+        - name: locust-script
+          configMap:
+            name: locust-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: locust
+spec:
+  ports:
+    - port: 8089
+      targetPort: 8089
+      nodePort: 30015
+  selector:
+    app: locust
+  type: LoadBalancer
+EOF
+```
