@@ -274,5 +274,11 @@ spec:
 EOF
 ```
 ```
-kubectl get hpa 
+$ kubectl get hpa  -A
+NAMESPACE       NAME                   REFERENCE                             TARGETS            MINPODS   MAXPODS   REPLICAS   AGE
+ingress-nginx   keda-hpa-nginx-scale   Deployment/ingress-nginx-controller   85250m/100 (avg)   1         20        4          2m22s
+
+$ kubectl get hpa  -A
+NAMESPACE       NAME                   REFERENCE                             TARGETS             MINPODS   MAXPODS   REPLICAS   AGE
+ingress-nginx   keda-hpa-nginx-scale   Deployment/ingress-nginx-controller   155625m/100 (avg)   1         20        8          3m
 ```
