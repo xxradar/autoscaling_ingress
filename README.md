@@ -5,7 +5,6 @@
 kubectl get no
 ```
 
-
 ## Install Helm
 See https://helm.sh/docs/intro/install/
 ```
@@ -78,7 +77,6 @@ kubectl port-forward -n prometheus --address 0.0.0.0  svc/prometheus-operated 90
 Default password for grafana `username: admin  password: prom-operator`
 
 ## Making sure prometheus and grafana can obtain the ingress nginx metrics
-
 ```
 kubectl apply -f -<<EOF
 apiVersion: monitoring.coreos.com/v1
@@ -238,4 +236,43 @@ spec:
     app: locust
   type: LoadBalancer
 EOF
+```
+
+### Install keda
+```
+helm repo add kedacore https://kedacore.github.io/charts
+helm repo update
+
+kubectl create namespace keda
+helm install keda kedacore/keda --namespace keda
+```
+
+### Create a Keda resource
+```
+kubectl apply -f - <<EOF
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+ name: nginx-scale
+ namespace: ingress-nginx
+spec:
+ scaleTargetRef:
+   kind: Deployment
+   name: ingress-nginx-controller
+ minReplicaCount: 1
+ maxReplicaCount: 20
+ cooldownPeriod: 30
+ pollingInterval: 1
+ triggers:
+ - type: prometheus
+   metadata:
+     serverAddress: http://prometheus-operated.prometheus:9090
+     metricName: nginx_ingress_controller_nginx_process_connections
+     query: |
+       sum(avg_over_time(nginx_ingress_controller_nginx_process_connections{}[1m]))
+     threshold: "100"
+EOF
+```
+```
+kubectl get hpa 
 ```
