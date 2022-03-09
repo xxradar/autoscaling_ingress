@@ -44,7 +44,8 @@ helm repo add stable https://charts.helm.sh/stable
 helm repo update
 ```
 ```
-helm install prometheus prometheus-community/kube-prometheus-stack
+helm install prometheus prometheus-community/kube-prometheus-stack \
+  --namespace prometheus --create-namespace
 ```
 ```
 kubectl port-forward svc/grafana-server 3000 -n ingress-nginx --address  0.0.0.0 &
