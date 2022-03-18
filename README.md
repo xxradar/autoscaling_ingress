@@ -132,7 +132,7 @@ spec:
       nodePort: 30001
   selector:
     app: podinfo
-  type: ClusterIP
+  type: NodePort
 EOF
 ```
 ## Deploy the ingress resource
